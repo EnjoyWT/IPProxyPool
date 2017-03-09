@@ -6,12 +6,14 @@ from util.exception import Con_DB_Fail
 
 try:
     if DB_CONFIG['DB_CONNECT_TYPE'] == 'pymongo':
+        print '----'
         from db.MongoHelper import MongoHelper as SqlHelper
     else:
         from db.SqlHelper import SqlHelper as SqlHelper
     sqlhelper = SqlHelper()
     sqlhelper.init_db()
 except Exception as e:
+    print  e
     raise Con_DB_Fail
 
 

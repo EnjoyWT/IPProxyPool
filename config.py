@@ -102,9 +102,10 @@ parserList = [
 '''
 DB_CONFIG = {
 
-    'DB_CONNECT_TYPE': 'sqlalchemy',  # 'pymongo'sqlalchemy
-    # 'DB_CONNECT_STRING':'mongodb://localhost:27017/'
-    'DB_CONNECT_STRING': 'sqlite:///' + os.path.dirname(__file__) + '/data/proxy.db'
+    #'DB_CONNECT_TYPE': 'sqlalchemy',
+    'DB_CONNECT_TYPE':'pymongo',
+    'DB_CONNECT_STRING':'mongodb://localhost:27017/'
+    #'DB_CONNECT_STRING': 'sqlite:///' + os.path.dirname(__file__) + '/data/proxy.db'
     # DB_CONNECT_STRING = 'mysql+mysqldb://root:root@localhost/proxy?charset=utf8'
 
 
@@ -123,7 +124,7 @@ API_PORT = 8000
 不需要检测ip是否已经存在，因为会定时清理
 '''
 UPDATE_TIME = 60 * 60  # 每一个小时检测一次是否有代理ip失效
-MINNUM = 40  # 当有效的ip值小于一个时 需要启动爬虫进行爬取
+MINNUM = 40  # 当有效的ip值小于该值 需要启动爬虫进行爬取
 MAXTIME = 3 * 24 * 60  # 当爬取存储开始一直使用的最大时间，如果超过这个时间，都删除
 
 TIMEOUT = 5  # socket延时
@@ -176,13 +177,16 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10"
 ]
 
-HEADER = {
-    'User-Agent': random.choice(USER_AGENTS),
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Connection': 'keep-alive',
-    'Accept-Encoding': 'gzip, deflate',
-}
+
+def get_header():
+    return {
+        'User-Agent': random.choice(USER_AGENTS),
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Accept-Encoding': 'gzip, deflate',
+    }
+
 
 TEST_URL = 'http://ip.chinaz.com/getip.aspx'
 TEST_IP = 'http://httpbin.org/ip'

@@ -1,9 +1,14 @@
 # coding:utf-8
+from gevent import monkey
+monkey.patch_all()
+
+import sys
+import time
 import gevent
+
 from gevent.pool import Pool
 from multiprocessing import Queue, Process, Value
-import time
-import sys
+
 from api.apiServer import start_api_server
 from config import THREADNUM, parserList, UPDATE_TIME, MINNUM
 from db.DataStore import store_data, sqlhelper
@@ -11,10 +16,6 @@ from spider.HtmlDownloader import Html_Downloader
 from spider.HtmlPraser import Html_Parser
 from validator.Validator import validator, getMyIP, detect_from_db
 
-__author__ = 'qiye'
-from gevent import monkey
-
-monkey.patch_all()
 '''
 这个类的作用是描述爬虫的逻辑
 '''
@@ -26,13 +27,12 @@ def startProxyCrawl(queue, db_proxy_num):
 
 
 class ProxyCrawl(object):
-    proxies = set()
+    proxies = set() #集合中放置(xxx:yy) 字符串用来去重
 
     def __init__(self, queue, db_proxy_num):
         self.crawl_pool = Pool(THREADNUM)
-        self.queue = queue
+        self.queue = queue #队列中放置 {"ip": port} 字典对象
         self.db_proxy_num = db_proxy_num
-
 
     def run(self):
         while True:
@@ -61,14 +61,13 @@ class ProxyCrawl(object):
 
             time.sleep(UPDATE_TIME)
 
-
     def crawl(self, parser):
         html_parser = Html_Parser()
         for url in parser['urls']:
             response = Html_Downloader.download(url)
-            if response != None:
+            if response is not None:
                 proxylist = html_parser.parse(response, parser)
-                if proxylist != None:
+                if proxylist is not None:
                     for proxy in proxylist:
                         proxy_str = '%s:%s' % (proxy['ip'], proxy['port'])
                         if proxy_str not in self.proxies:
@@ -89,7 +88,6 @@ if __name__ == "__main__":
     p1.start()
     p2.start()
     p3.start()
-
 
     # spider = ProxyCrawl()
     # spider.run()
